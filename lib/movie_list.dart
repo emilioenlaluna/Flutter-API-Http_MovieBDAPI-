@@ -33,13 +33,48 @@ class _MovieListState extends State<MovieList> {
     });
   }
 
+  Future search(String text) async {
+    movies = await helper?.findMovies(text);
+    setState(() {
+      moviesCount = movies?.length;
+      movies = movies;
+    });
+  }
+
+  Icon visibleIcon = Icon(Icons.search);
+  Widget searchBar = Text('Movies');
   @override
   Widget build(BuildContext context) {
     NetworkImage image;
+
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Movies'),
-        ),
+        appBar: AppBar(title: searchBar, actions: <Widget>[
+          IconButton(
+            icon: visibleIcon,
+            onPressed: () {
+              setState(() {
+                if (this.visibleIcon.icon == Icons.search) {
+                  this.visibleIcon = Icon(Icons.cancel);
+                  this.searchBar = TextField(
+                    textInputAction: TextInputAction.search,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20.0,
+                    ),
+                    onChanged: (String text) {
+                      search(text);
+                    },
+                  );
+                } else {
+                  setState(() {
+                    this.visibleIcon = Icon(Icons.search);
+                    this.searchBar = Text('Movies');
+                  });
+                }
+              });
+            },
+          ),
+        ]),
         body: ListView.builder(
             itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
             itemBuilder: (BuildContext context, int position) {
